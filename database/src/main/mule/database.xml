@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="da129076-265a-4fee-b402-38b92c6cc0ae" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="0bd2b1f5-dc0c-41f9-a1ce-b5f1196dd114" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="adi_account" />
+	</db:config>
+	<flow name="databaseFlow" doc:id="75391864-6832-4b3b-ad02-ba580cdace15" >
+		<http:listener doc:name="Listener" doc:id="3f7605ab-7c77-45b6-a5bc-e586358a8a00" config-ref="HTTP_Listener_config" path="/creataccount"/>
+		<logger level="INFO" doc:name="Logger" doc:id="fdfa86c3-83ec-4178-9e68-8c28e7507b72" message="reqrecived....#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="3248885d-bb2e-48a8-8bbe-ab191752d9c5" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into persons(Address,FirstName,City)
+values (:add,:firname,:City);]]></db:sql>
+			<db:input-parameters ><![CDATA[#
+[{
+  add: payload.address,
+firname:payload.name,
+City:payload.location
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="f0e72ad4-56cc-496e-a4c4-72e0801d1f10" message="databaseresponce......#[payload]"/>
+	</flow>
+</mule>
